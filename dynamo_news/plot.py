@@ -11,7 +11,10 @@ from dynamo_news.models import ForexFactory
 
 
 def get_plot(
-    plot_data: list[list[Union[datetime, int]]], condition: ForexFactory
+    plot_data: list[list[Union[datetime, int]]],
+    condition: ForexFactory,
+    logo_path: str,
+    resize: tuple[int, int] = (155, 23),
 ) -> str:
     """
     plot_data: [
@@ -87,8 +90,8 @@ def get_plot(
 
     try:
         img = Image.open(file_name)
-        logo = Image.open("./images/dynamo_logo_flat.jpg")
-        logo = logo.resize((155, 23))
+        logo = Image.open(logo_path)
+        logo = logo.resize(resize)
         img.paste(logo, (round(img.width - 180), 5))
         img.save(file_name)
     except Exception as e:
