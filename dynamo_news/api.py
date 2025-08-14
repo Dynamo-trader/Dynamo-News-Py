@@ -9,6 +9,8 @@ from dynamo_news.math import calculate_pip_value
 from dynamo_news.models import NewsSource, News
 from dynamo_news.pair_info import pair_infos
 
+base_url = "https://dynamoapi.dynamo-link.com"
+
 
 async def get_news(
     api_key: str,
@@ -23,7 +25,7 @@ async def get_news(
     if not start_date.tzinfo or not end_date.tzinfo:
         raise ValueError("Dates must have timezone information")
 
-    url = f"https://dynamoapi.dynamo-link.com/{source.value}"
+    url = f"{base_url}/{source.value}"
     response: list[dict] = await post_http(
         url,
         api_key=api_key,
@@ -48,7 +50,7 @@ async def get_news(
 async def get_one_news(
     api_key: str, news_id: str, source: NewsSource
 ) -> Union[News, None]:
-    url = "https://dynamoapi.dynamo-link.com/get-news"
+    url = f"{base_url}/get-news"
     response = await get_http(
         url,
         params={
@@ -91,7 +93,7 @@ async def pip_diff(
         }
 
     if not_found:
-        url = f"https://dynamoapi.dynamo-link.com/pip-diff"
+        url = f"{base_url}/pip-diff"
         data = {
             "symbols": [x for x in not_found],
             "prices": [not_found[x] for x in not_found],
