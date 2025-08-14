@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dynamo_news"
+version = "0.0.1"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Hamim (Dynamo)", email = "developer@dynamotrader.com" },
+]
+requires-python = ">=3.11"
+classifiers = [
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "httpx[http2]",
+    "pendulum",
+    "aiohttp[speedups]",
+    "pydantic>=2.7.1",
+    "cachetools>=5.3.3",
+    "cryptography>=44.0.1",
+    "pytz>=2024.1",
+    "pillow",
+    "cloudscraper",
+    "discord",
+    "aiogram",
+    "matplotlib",
+    "numpy",
+    "pymongo",
+    "setuptools>=61",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.4.1",
+    "pytest-asyncio",
+    "pytest-cov",
+    "black",
+    "isort",
+    "flake8",
+    "mypy",
+    "pylint",
+    "pre-commit",
+]
+
+[tool.setuptools.packages.find]
+include = ["*"]
