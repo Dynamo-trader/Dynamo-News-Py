@@ -1,8 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
 
-python bump_version.py
-
 REM Add all modified files
 git add .
 

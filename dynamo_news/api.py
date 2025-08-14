@@ -5,7 +5,9 @@ from datetime import datetime
 from typing import Union
 
 from dynamo_news.http import post_http, get_http
+from dynamo_news.math import calculate_pip_value
 from dynamo_news.models import NewsSource, News
+from dynamo_news.pair_info import pair_infos
 
 
 async def get_news(
@@ -56,3 +58,50 @@ async def get_one_news(
         api_key=api_key,
     )
     return News(**response)
+
+
+async def pip_diff(
+    symbols: list[str], prices: list[float], pip_steps: list[int], api_key: str
+) -> dict:
+    diff = {}
+    not_found = {}
+
+    for symbol, price in zip(symbols, prices):
+        pair_info = pair_infos.get(symbol)
+        if not pair_info:
+            not_found[symbol] = price
+        new_price: list[float] = calculate_pip_value(
+            price=price, pip_steps=pip_steps, decimal_places=pair_info["digits"]
+        )
+
+        # match index of the pips to determine if it is + or -
+        prices_to = []
+        prices_to_negative = []
+
+        for np in new_price:
+            if pip_steps[new_price.index(np)] >= 0:
+                prices_to.append(np)
+            else:
+                prices_to_negative.append(np)
+
+        diff[symbol] = {
+            "price_from": price,
+            "prices_to": prices_to,
+            "prices_to_negative": prices_to_negative,
+        }
+
+    if not_found:
+        url = f"https://dynamoapi.dynamo-link.com/pip-diff"
+        data = {
+            "symbols": [x for x in not_found],
+            "prices": [not_found[x] for x in not_found],
+            "pip_steps": pip_steps,
+        }
+        response = await post_http(
+            url,
+            api_key=api_key,
+            json=data,
+        )
+
+        diff.update(response)
+    return diff
