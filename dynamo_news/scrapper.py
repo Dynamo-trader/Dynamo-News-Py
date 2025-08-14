@@ -69,14 +69,16 @@ async def update_forexfactory_calendar(
     start_date: datetime = None,
     end_date: datetime = None,
 ) -> Union[list[News]]:
-    logging.info(f"Updating Forex Factory Calendar...")
+    logging.info("Updating Forex Factory Calendar...")
 
     current_date = datetime.now()
     start_of_current_month = current_date.replace(day=1)
 
     if not start_date or not end_date:
         start_date = (current_date.replace(day=1) - timedelta(days=1)).replace(day=1)
-        end_date = (start_of_current_month + relativedelta(months=2)).replace(day=1) - timedelta(days=1)
+        end_date = (start_of_current_month + relativedelta(months=2)).replace(
+            day=1
+        ) - timedelta(days=1)
 
     body = {
         "default_view": "today",
@@ -89,7 +91,7 @@ async def update_forexfactory_calendar(
 
     req = scraper.post(
         "https://www.forexfactory.com/calendar/apply-settings/1?navigation=0",
-        data=json.dumps(body)
+        data=json.dumps(body),
     )
     days = req.json()["days"]
 
@@ -103,7 +105,9 @@ async def update_forexfactory_calendar(
             rating = (
                 3
                 if "High" in event["impactTitle"]
-                else 2 if "Medium" in event["impactTitle"] else 1
+                else 2
+                if "Medium" in event["impactTitle"]
+                else 1
             )
 
             newses.append(
@@ -153,7 +157,7 @@ async def update_forexfactory_calendar(
             if not return_early and new["ebase_id"] not in done_timeline:
                 done_timeline.append(new["ebase_id"])
                 if news_line := await scrap_forex_factory_event_timeline(
-                        new["event_id"]
+                    new["event_id"]
                 ):
                     await db_timeline.update_one(
                         {

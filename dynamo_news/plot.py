@@ -11,7 +11,7 @@ from dynamo_news.models import ForexFactory
 
 
 def get_plot(
-        plot_data: list[list[Union[datetime, int]]], condition: ForexFactory
+    plot_data: list[list[Union[datetime, int]]], condition: ForexFactory
 ) -> str:
     """
     plot_data: [

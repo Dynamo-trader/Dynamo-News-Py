@@ -18,20 +18,20 @@ async def edit_or_send(
                     and send_for == "cpi"
                 )
                 or (
-                "non farm payrolls" in embeds[0].title.lower() and send_for == "nfp"
-            )
+                    "non farm payrolls" in embeds[0].title.lower() and send_for == "nfp"
+                )
                 or (
-                "producer price index" in embeds[0].title.lower()
-                and send_for == "ppi"
-            )
+                    "producer price index" in embeds[0].title.lower()
+                    and send_for == "ppi"
+                )
                 or (
-                "u.k federal funds rate" in embeds[0].title.lower()
-                and send_for == "feduk"
-            )
+                    "u.k federal funds rate" in embeds[0].title.lower()
+                    and send_for == "feduk"
+                )
                 or (
-                "u.s federal funds rate" in embeds[0].title.lower()
-                and send_for == "fedus"
-            )
+                    "u.s federal funds rate" in embeds[0].title.lower()
+                    and send_for == "fedus"
+                )
             ):
                 await message.delete()
             else:

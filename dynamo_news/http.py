@@ -7,11 +7,7 @@ import cloudscraper
 
 http = httpx.AsyncClient()
 scraper = cloudscraper.create_scraper(
-    browser={
-        "browser": "chrome",
-        "platform": "windows",
-        "mobile": True
-    }
+    browser={"browser": "chrome", "platform": "windows", "mobile": True}
 )
 
 
@@ -21,7 +17,9 @@ async def fetch_url_async(u: str, return_json: bool = True):
     return r.json() if return_json else r.text
 
 
-async def get_http(url: str, params: dict[str, str] = None, api_key: str = None) -> Union[dict, list]:
+async def get_http(
+    url: str, params: dict[str, str] = None, api_key: str = None
+) -> Union[dict, list]:
     if params:
         params = {k: v for k, v in params.items() if v is not None}
         encoded_params = urlencode(params)
@@ -50,9 +48,7 @@ async def post_http(
 
     if api_key:
         headers["X-API-KEY"] = api_key
-    response = await http.post(
-        url, data=data, json=json, headers=headers
-    )
+    response = await http.post(url, data=data, json=json, headers=headers)
     response.raise_for_status()
     try:
         return response.json()

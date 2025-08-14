@@ -42,14 +42,17 @@ async def get_news(
             logging.error(f"Error parsing {source} news: {news}")
     return newses
 
-async def get_one_news(api_key: str, news_id: str, source: NewsSource) -> Union[News, None]:
-    url = f"https://dynamoapi.dynamo-link.com/get-news"
+
+async def get_one_news(
+    api_key: str, news_id: str, source: NewsSource
+) -> Union[News, None]:
+    url = "https://dynamoapi.dynamo-link.com/get-news"
     response = await get_http(
         url,
         params={
             "news_id": news_id,
             "source": source.value,
         },
-        api_key=api_key
+        api_key=api_key,
     )
     return News(**response)
