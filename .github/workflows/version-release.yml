@@ -62,6 +62,8 @@ jobs:
     needs: check-version
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && needs.check-version.outputs.version-changed == 'true' && needs.check-version.outputs.tag-exists == 'false'
+    permissions:
+      contents: write
     
     steps:
       - uses: actions/checkout@v4
