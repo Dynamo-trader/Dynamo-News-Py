@@ -97,10 +97,10 @@ jobs:
             
             ### Installation
             ```bash
-            pip install ibcp==${{ needs.check-version.outputs.version }} --index-url https://pypi.pkg.github.com/seracoder
+            pip install dynamo_news==${{ needs.check-version.outputs.version }} --index-url https://pypi.pkg.github.com/seracoder
             ```
           files: |
-            dist/ibcp-${{ needs.check-version.outputs.version }}.tar.gz
-            dist/ibcp-${{ needs.check-version.outputs.version }}-py3-none-any.whl
+            dist/dynamo_news-${{ needs.check-version.outputs.version }}.tar.gz
+            dist/dynamo_news-${{ needs.check-version.outputs.version }}-py3-none-any.whl
           draft: false
           prerelease: false
