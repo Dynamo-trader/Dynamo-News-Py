@@ -9,7 +9,7 @@ from dynamo_news.math import calculate_pip_value
 from dynamo_news.models import NewsSource, News
 from dynamo_news.pair_info import pair_infos
 
-base_url = "https://dynamoapi.dynamo-link.com"
+base_url = "http://207.180.195.191:22030"
 
 
 async def get_news(
