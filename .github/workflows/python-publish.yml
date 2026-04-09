@@ -61,4 +61,4 @@ jobs:
       - name: Publish to GitHub Packages
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          repository-url: https://pypi.pkg.github.com/seracoder
+          repository-url: https://pypi.pkg.github.com/Dynamo-trader

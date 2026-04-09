@@ -99,7 +99,7 @@ jobs:
             
             ### Installation
             ```bash
-            pip install dynamo_news==${{ needs.check-version.outputs.version }} --index-url https://pypi.pkg.github.com/seracoder
+            pip install dynamo_news==${{ needs.check-version.outputs.version }} --index-url https://pypi.pkg.github.com/Dynamo-trader
             ```
           files: |
             dist/dynamo_news-${{ needs.check-version.outputs.version }}.tar.gz
