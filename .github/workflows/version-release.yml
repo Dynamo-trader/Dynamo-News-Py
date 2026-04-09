@@ -1,0 +1,106 @@
+# Automatically create tags and releases when version changes in setup.cfg
+name: Version Release
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+      version-changed: ${{ steps.check-version.outputs.changed }}
+      tag-exists: ${{ steps.check-tag.outputs.exists }}
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history for version comparison
+      
+      - name: Get current version from pyproject.toml
+        id: get-version
+        run: |
+          VERSION=$(grep '^version = "' pyproject.toml | sed 's/version = "//;s/"//')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Current version: $VERSION"
+      
+      - name: Check if version changed
+        id: check-version
+        run: |
+          CURRENT_VERSION="${{ steps.get-version.outputs.version }}"
+          
+          # Get the previous version from the last commit that changed pyproject.toml
+          PREVIOUS_VERSION=$(git log --oneline -n 2 --pretty=format: --name-only pyproject.toml | head -2 | tail -1 | xargs -I {} git show {}:pyproject.toml 2>/dev/null | grep '^version = "' | sed 's/version = "//;s/"//' || echo "")
+          
+          if [ "$PREVIOUS_VERSION" = "" ]; then
+            echo "No previous version found, treating as new"
+            echo "changed=true" >> $GITHUB_OUTPUT
+          elif [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
+            echo "Version changed from $PREVIOUS_VERSION to $CURRENT_VERSION"
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "Version unchanged: $CURRENT_VERSION"
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Check if tag exists
+        id: check-tag
+        run: |
+          VERSION="${{ steps.get-version.outputs.version }}"
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "Tag v$VERSION already exists"
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "Tag v$VERSION does not exist"
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+  create-release:
+    needs: check-version
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && needs.check-version.outputs.version-changed == 'true' && needs.check-version.outputs.tag-exists == 'false'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+      
+      - name: Set up Python
+        run: uv python install
+      
+      - name: Sync version to __init__.py
+        run: |
+          python scripts/version.py show > /dev/null  # This will sync versions
+      
+      - name: Build package
+        run: |
+          uv build
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ needs.check-version.outputs.version }}
+          name: Release v${{ needs.check-version.outputs.version }}
+          body: |
+            ## Release v${{ needs.check-version.outputs.version }}
+            
+            This release was automatically created when the version was updated in setup.cfg.
+            
+            ### Changes
+            - Version updated to ${{ needs.check-version.outputs.version }}
+            
+            ### Installation
+            ```bash
+            pip install ibcp==${{ needs.check-version.outputs.version }} --index-url https://pypi.pkg.github.com/seracoder
+            ```
+          files: |
+            dist/ibcp-${{ needs.check-version.outputs.version }}.tar.gz
+            dist/ibcp-${{ needs.check-version.outputs.version }}-py3-none-any.whl
+          draft: false
+          prerelease: false
